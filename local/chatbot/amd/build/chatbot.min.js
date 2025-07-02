@@ -15,6 +15,10 @@ define(['jquery'], function($) {
 
         icon.on('click', function(){
             chatwin.toggle();
+            if (chatwin.is(':visible')) {
+                $('.context-info').remove();
+                displayContext();
+            }
         });
 
         $('#chatbot-send').on('click', function(){
@@ -31,7 +35,14 @@ define(['jquery'], function($) {
         });
 
         function addMessage(sender, text){
-            var label = sender === 'user' ? 'User ' + userid : 'Raghu';
+            var label;
+            if (sender === 'user') {
+                label = 'User ' + userid;
+            } else if (sender === 'bot') {
+                label = 'Raghu';
+            } else {
+                label = sender;
+            }
             var msg = $('<div class="msg msg-' + sender + '"><div class="msg-label"></div><div class="msg-text"></div></div>');
             msg.find('.msg-label').text(label);
             msg.find('.msg-text').text(text);
@@ -42,6 +53,13 @@ define(['jquery'], function($) {
                 msg.css({'align-self':'flex-start','background':'#f1f0f0'});
             }
             msg.find('.msg-label').css({'font-size':'0.75em','color':'#555'});
+            $('#chatbot-messages').append(msg);
+            $('#chatbot-messages').scrollTop($('#chatbot-messages')[0].scrollHeight);
+        }
+
+        function displayContext(){
+            var context = 'userid=' + userid + ', coursename=' + coursename;
+            var msg = $('<div class="context-info"></div>').text('Context: ' + context);
             $('#chatbot-messages').append(msg);
             $('#chatbot-messages').scrollTop($('#chatbot-messages')[0].scrollHeight);
         }
