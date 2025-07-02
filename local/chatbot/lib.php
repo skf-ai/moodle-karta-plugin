@@ -3,7 +3,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 function local_chatbot_before_footer() {
-    global $PAGE, $USER, $COURSE;
+    // Bring Moodle globals into scope so they’re not null.
+    global $USER, $COURSE, $PAGE;
 
     if (!isloggedin() || isguestuser()) {
         return;
