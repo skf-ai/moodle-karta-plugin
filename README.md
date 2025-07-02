@@ -4,7 +4,12 @@ This plugin adds a simple chat icon to Moodle pages so selected users can intera
 
 ## Installation
 
-1. Zip the `local` directory into `chatbot.zip` so that the resulting archive contains the `chatbot` folder inside `local/`.
+1. Create a zip file from the `chatbot` plugin folder located inside `local/`. The archive **must** have `chatbot` as its root directory so Moodle can detect the plugin type correctly. For example:
+
+   ```
+   cd local
+   zip -r ../chatbot.zip chatbot
+   ```
 2. Log in as an administrator and navigate to **Site administration > Plugins > Install plugins**.
 3. Upload `chatbot.zip` and follow the on‑screen instructions to complete the installation.
 4. After installation go to **Site administration > Plugins > Local plugins > Chatbot** to configure which users can access the chatbot.
@@ -21,11 +26,10 @@ The plugin passes the user ID and the current course name (if available) to the 
 
 ## Packaging the Plugin
 
-1. Ensure the folder structure is:
+1. Ensure the folder structure inside the `chatbot` directory is:
 
 ```
-local/
-  chatbot/
+chatbot/
     version.php
     lib.php
     settings.php
@@ -35,10 +39,11 @@ local/
       build/chatbot.min.js
 ```
 
-2. From the directory containing `local/`, create the zip archive:
+2. From inside the `local` directory run:
 
 ```
-zip -r chatbot.zip local/chatbot
+cd local
+zip -r ../chatbot.zip chatbot
 ```
 
 3. Upload this archive through the Moodle interface as described in the installation steps.
