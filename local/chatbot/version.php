@@ -2,5 +2,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_chatbot';
-$plugin->version = 2025070204;
+$plugin->version = 2025070205;
 $plugin->requires = 2019052000; // Moodle 3.7.
