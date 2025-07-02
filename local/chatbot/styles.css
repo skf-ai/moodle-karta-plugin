@@ -31,6 +31,20 @@
   display: none;
 }
 
+#chatbot-context {
+  padding: 4px 8px;
+  border-bottom: 1px solid #eee;
+  font-weight: bold;
+  font-size: 0.85em;
+}
+
+#chatbot-thinking {
+  padding: 4px 8px;
+  font-style: italic;
+  color: #666;
+  height: 1em;
+}
+
 #chatbot-messages {
   flex: 1;
   padding: 10px;
@@ -54,6 +68,14 @@
   align-self: flex-start;
   background: #F4C430;
   color: #fff;
+}
+
+.msg .msg-sender {
+  font-weight: bold;
+  font-size: 0.75em;
+  text-align: right;
+  margin-bottom: 2px;
+  color: #333;
 }
 
 #chatbot-input {

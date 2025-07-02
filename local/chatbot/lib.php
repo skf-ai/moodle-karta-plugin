@@ -19,10 +19,14 @@ function local_chatbot_before_footer() {
     }
 
     $coursename = isset($COURSE->fullname) ? $COURSE->fullname : '';
+    $username = fullname($USER);
+
     // js_call_amd expects an array of arguments. Pass a single options object
-    // so the JS init function receives one parameter with userid and coursename.
+    // so the JS init function receives one parameter with userid, username and
+    // course name.
     $PAGE->requires->js_call_amd('local_chatbot/chatbot', 'init', [[
         'userid' => $USER->id,
+        'username' => $username,
         'coursename' => $coursename
     ]]);
 }
