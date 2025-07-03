@@ -7,11 +7,11 @@ This plugin adds a simple chat icon to Moodle pages so selected users can intera
 1. Zip the `local` directory into `chatbot.zip` so that the resulting archive contains the `chatbot` folder inside `local/`.
 2. Log in as an administrator and navigate to **Site administration > Plugins > Install plugins**.
 3. Upload `chatbot.zip` and follow the on‑screen instructions to complete the installation.
-4. After installation go to **Site administration > Plugins > Local plugins > Chatbot** to configure which users can access the chatbot.
+4. After installation go to **Site administration > Plugins > Local plugins > Chatbot** to manage which students can access the chatbot.
 
 ## Configuration
 
-- **Enabled user IDs** – Provide a comma‑separated list of Moodle user IDs that should see the chat icon. Leave this field empty to enable the chatbot for all authenticated users.
+Use the management page to search for students and enable or disable the chatbot for each of them. Only students marked as enabled will see the chat icon.
 
 ## Usage
 
