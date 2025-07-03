@@ -10,12 +10,10 @@ function local_chatbot_before_footer() {
         return;
     }
 
-    $enabled = get_config('local_chatbot', 'enabledusers');
-    if (!empty($enabled)) {
-        $ids = array_map('intval', array_map('trim', explode(',', $enabled)));
-        if (!in_array($USER->id, $ids)) {
-            return;
-        }
+    global $DB;
+    $record = $DB->get_record('student_chatbots', ['userid' => $USER->id]);
+    if (!$record || !$record->enabled) {
+        return;
     }
 
     $coursename = isset($COURSE->fullname) ? $COURSE->fullname : '';
