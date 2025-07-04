@@ -57,7 +57,7 @@ function xmldb_local_chatbot_upgrade($oldversion) {
             $dbman->add_field($table, $remaining);
         }
 
-        upgrade_plugin_savepoint(true, 2025070208, 'local', 'chatbot');
+        upgrade_plugin_savepoint(true, 2025070209, 'local', 'chatbot');
     }
 
     return true;
