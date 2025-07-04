@@ -71,6 +71,7 @@ echo html_writer::empty_tag('input', ['type' => 'submit', 'value' => get_string(
 echo html_writer::end_tag('form');
 
 $table = new html_table();
+$table->id = 'chatbot-user-table';
 $table->head = ['ID', 'Name', 'Email', get_string('credits', 'local_chatbot'), ''];
 
 foreach ($users as $user) {

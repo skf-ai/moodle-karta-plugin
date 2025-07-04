@@ -90,3 +90,12 @@
 #chatbot-input button {
   margin-left: 4px;
 }
+
+#chatbot-user-table th.sortable {
+  cursor: pointer;
+}
+
+#chatbot-user-table .filter-row input {
+  width: 100%;
+  box-sizing: border-box;
+}
