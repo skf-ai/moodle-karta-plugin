@@ -48,5 +48,17 @@ function xmldb_local_chatbot_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025070207, 'local', 'chatbot');
     }
 
+    if ($oldversion < 2025070208) {
+        // Add remainingcredits field if it does not exist.
+        $table = new xmldb_table('student_chatbots');
+        $remaining = new xmldb_field('remainingcredits', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        if (!$dbman->field_exists($table, $remaining)) {
+            $dbman->add_field($table, $remaining);
+        }
+
+        upgrade_plugin_savepoint(true, 2025070208, 'local', 'chatbot');
+    }
+
     return true;
 }
