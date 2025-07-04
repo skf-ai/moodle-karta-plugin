@@ -3,12 +3,14 @@ define(['jquery', 'core/templates'], function($, Templates) {
         var userid = opts.userid;
         var username = opts.username;
         var coursename = opts.coursename;
+        var credits = opts.credits || 0;
         var iconUrl = M.util.image_url('logo', 'local_chatbot');
 
         Templates.render('local_chatbot/chatbox', {iconurl: iconUrl}).done(function(html) {
             $('body').append(html);
             Templates.runTemplateJS(html);
             $('#chatbot-context').text(username + ' (' + userid + ') - ' + coursename);
+            $('#chatbot-credits').text('Credits remaining: ' + credits);
             setupEvents();
         });
 
@@ -31,11 +33,21 @@ define(['jquery', 'core/templates'], function($, Templates) {
         function sendMessage() {
             var text = $('#chatbot-text').val().trim();
             if (!text) {return;}
+            if (credits <= 0) {
+                addMessage('bot', M.str.local_chatbot.outofcredits);
+                return;
+            }
             $('#chatbot-text').val('');
             addMessage('user', text);
             showThinking(function() {
-                addMessage('bot', 'Hi there');
-                console.log('Sent to backend', {text: text, userid: userid, coursename: coursename});
+                $.post(M.cfg.wwwroot + '/local/chatbot/updatecredit.php', {sesskey: M.cfg.sesskey}, function(resp) {
+                    if (resp && typeof resp.credits !== 'undefined') {
+                        credits = resp.credits;
+                        $('#chatbot-credits').text('Credits remaining: ' + credits);
+                    }
+                    addMessage('bot', 'Hi there');
+                    console.log('Sent to backend', {text: text, userid: userid, coursename: coursename});
+                }, 'json');
             });
         }
 

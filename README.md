@@ -46,3 +46,7 @@ zip -r chatbot.zip local/chatbot
 ## Notes
 
 This plugin does not perform any server‑side communication yet. The chat window is purely client side and always replies with “Hi there”. Add your own AJAX calls within `chatbot.js` to connect to a real chatbot service.
+
+## Credits system
+
+Admins can allocate chat credits to each student from the Chatbot settings page. Each message/response pair consumes one credit which is tracked in the database. When a student runs out of credits the chat window will display a warning and no further questions can be sent until more credits are added by an admin.
