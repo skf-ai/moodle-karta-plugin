@@ -58,29 +58,19 @@ define(['jquery', 'core/templates'], function($, Templates) {
         }
 
         function callChatAPI(message, callback) {
-            var url = 'https://hooks.getkarta.ai/api/v1/skf/SidRFS_67aAV4';
-            var payload = {
-                session_id: String(userid),
-                interaction_id: String(Math.floor(Math.random() * 1000000000)),
-                messages: [{
-                    content: message,
-                    content_type: 'text',
-                    created_at: new Date().toISOString()
-                }],
-                user_property: {},
-                course_id: ['111']
-            };
             $.ajax({
-                url: url,
+                url: M.cfg.wwwroot + '/local/chatbot/chatapi.php',
                 method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(payload),
-                headers: {
-                    'Authorization': 'Basic ' + btoa('SKF_ADMIN:^ffB57rC]1$5')
+                dataType: 'json',
+                data: {
+                    sesskey: M.cfg.sesskey,
+                    message: message
                 },
                 success: function(data) {
                     if (data && data.reply) {
                         callback(null, data.reply);
+                    } else if (data && data.error) {
+                        callback(data.error);
                     } else {
                         callback('Invalid response from server');
                     }
