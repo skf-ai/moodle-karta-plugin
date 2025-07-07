@@ -45,7 +45,10 @@ zip -r chatbot.zip local/chatbot
 
 ## Notes
 
-This plugin communicates with the Karta backend using a POST request for each message and displays the reply it receives.
+This plugin communicates with the Karta backend through a Moodle PHP endpoint.
+Each user message is posted to `/local/chatbot/chatapi.php` which then forwards
+the request to the Karta API and returns the reply for display in the chat
+window. This avoids browser CORS restrictions.
 
 ## Credits system
 
