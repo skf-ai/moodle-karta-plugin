@@ -1,4 +1,4 @@
-define(['jquery', 'core/templates'], function($, Templates) {
+define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templates, Markdown) {
     function init(opts) {
         var userid = opts.userid;
         var username = opts.username;
@@ -84,6 +84,11 @@ define(['jquery', 'core/templates'], function($, Templates) {
 
         function addMessage(sender, text) {
             var sendername = sender === 'bot' ? 'sid' : username;
+            if (sender === 'bot') {
+                text = Markdown.convert(text);
+            } else {
+                text = Markdown.escapeHtml(text);
+            }
             Templates.render('local_chatbot/message', {sender: sender, text: text, sendername: sendername}).done(function(html) {
                 $('#chatbot-messages').append(html);
                 Templates.runTemplateJS(html);

@@ -67,7 +67,7 @@
 .msg.msg-bot {
   align-self: flex-start;
   background: #F4C430;
-  color: #fff;
+  color: #000;
 }
 
 .msg .msg-sender {
