@@ -39,22 +39,22 @@ define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templ
             }
             $('#chatbot-text').val('');
             addMessage('user', text);
-            showThinking(function() {
-                $.post(M.cfg.wwwroot + '/local/chatbot/updatecredit.php', {sesskey: M.cfg.sesskey}, function(resp) {
-                    if (resp && typeof resp.credits !== 'undefined') {
-                        credits = resp.credits;
-                        $('#chatbot-credits').text('Credits remaining: ' + credits);
+            var stopThinking = showThinking();
+            $.post(M.cfg.wwwroot + '/local/chatbot/updatecredit.php', {sesskey: M.cfg.sesskey}, function(resp) {
+                if (resp && typeof resp.credits !== 'undefined') {
+                    credits = resp.credits;
+                    $('#chatbot-credits').text('Credits remaining: ' + credits);
+                }
+                callChatAPI(text, function(err, reply) {
+                    if (err) {
+                        addMessage('bot', err);
+                    } else {
+                        addMessage('bot', reply);
                     }
-                    callChatAPI(text, function(err, reply) {
-                        if (err) {
-                            addMessage('bot', err);
-                        } else {
-                            addMessage('bot', reply);
-                        }
-                        console.log('Sent to backend', {text: text, userid: userid, coursename: coursename});
-                    });
-                }, 'json');
-            });
+                    stopThinking();
+                    console.log('Sent to backend', {text: text, userid: userid, coursename: coursename});
+                });
+            }, 'json');
         }
 
         function callChatAPI(message, callback) {
@@ -97,7 +97,7 @@ define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templ
             });
         }
 
-        function showThinking(callback) {
+        function showThinking() {
             var steps = [
                 'Understanding your question...',
                 'Formulating a response...',
@@ -105,17 +105,14 @@ define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templ
             ];
             var $thinking = $('#chatbot-thinking');
             var index = 0;
-            function next() {
-                if (index < steps.length) {
-                    $thinking.text(steps[index]);
-                    index++;
-                    setTimeout(next, 1000);
-                } else {
-                    $thinking.text('');
-                    callback();
-                }
-            }
-            next();
+            var interval = setInterval(function() {
+                $thinking.text(steps[index]);
+                index = (index + 1) % steps.length;
+            }, 1000);
+            return function stop() {
+                clearInterval(interval);
+                $thinking.text('');
+            };
         }
     }
 

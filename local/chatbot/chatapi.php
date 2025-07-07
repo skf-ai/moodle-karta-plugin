@@ -5,15 +5,23 @@ require_once(__DIR__ . '/../../config.php');
 require_login();
 require_sesskey();
 
+function uuid_v4() {
+    $data = random_bytes(16);
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
+
 $message = required_param('message', PARAM_RAW);
 $userid = $USER->id;
 
-$interactionid = (string)random_int(100000, 999999999);
+$interactionid = (string)$userid;
+$sessionid = uuid_v4();
 $now = microtime(true);
 $created = gmdate('Y-m-d\TH:i:s.', (int)$now) . sprintf('%06d', ($now - floor($now)) * 1e6);
 
 $payload = [
-    'session_id' => (string)$userid,
+    'session_id' => $sessionid,
     'interaction_id' => $interactionid,
     'messages' => [[
         'content' => $message,
