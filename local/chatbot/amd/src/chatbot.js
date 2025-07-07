@@ -45,9 +45,50 @@ define(['jquery', 'core/templates'], function($, Templates) {
                         credits = resp.credits;
                         $('#chatbot-credits').text('Credits remaining: ' + credits);
                     }
-                    addMessage('bot', 'Hi there');
-                    console.log('Sent to backend', {text: text, userid: userid, coursename: coursename});
+                    callChatAPI(text, function(err, reply) {
+                        if (err) {
+                            addMessage('bot', err);
+                        } else {
+                            addMessage('bot', reply);
+                        }
+                        console.log('Sent to backend', {text: text, userid: userid, coursename: coursename});
+                    });
                 }, 'json');
+            });
+        }
+
+        function callChatAPI(message, callback) {
+            var url = 'https://hooks.getkarta.ai/api/v1/skf/SidRFS_67aAV4';
+            var payload = {
+                session_id: String(userid),
+                interaction_id: String(Math.floor(Math.random() * 1000000000)),
+                messages: [{
+                    content: message,
+                    content_type: 'text',
+                    created_at: new Date().toISOString()
+                }],
+                user_property: {},
+                course_id: ['111']
+            };
+            $.ajax({
+                url: url,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                headers: {
+                    'Authorization': 'Basic ' + btoa('SKF_ADMIN:^ffB57rC]1$5')
+                },
+                success: function(data) {
+                    if (data && data.reply) {
+                        callback(null, data.reply);
+                    } else {
+                        callback('Invalid response from server');
+                    }
+                },
+                error: function(xhr) {
+                    var msg = xhr.responseText || xhr.statusText || 'Unknown error';
+                    callback('Error: ' + msg);
+                }
             });
         }
 
