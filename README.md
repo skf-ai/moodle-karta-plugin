@@ -15,7 +15,7 @@ Use the management page to search for students and enable or disable the chatbot
 
 ## Usage
 
-When enabled for a user, a smiley chat icon appears at the bottom right of every page. Clicking the icon opens a small chat window. Any message typed by the user triggers a two‑second “Agent is thinking…” indicator before replying with the fixed text “Hi there”.
+When enabled for a user, a smiley chat icon appears at the bottom right of every page. Clicking the icon opens a small chat window. Any message typed by the user triggers a two‑second “Agent is thinking…” indicator before the message is sent to the Karta API. The response from the API is then shown in the chat window.
 
 The plugin passes the user ID and the current course name (if available) to the JavaScript widget. The included widget simply logs this information to the browser console. Replace the logic inside `amd/src/chatbot.js` with your integration code to connect to your chosen backend service.
 
@@ -45,7 +45,7 @@ zip -r chatbot.zip local/chatbot
 
 ## Notes
 
-This plugin does not perform any server‑side communication yet. The chat window is purely client side and always replies with “Hi there”. Add your own AJAX calls within `chatbot.js` to connect to a real chatbot service.
+This plugin communicates with the Karta backend using a POST request for each message and displays the reply it receives.
 
 ## Credits system
 
