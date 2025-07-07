@@ -16,7 +16,11 @@ $message = required_param('message', PARAM_RAW);
 $userid = $USER->id;
 
 $interactionid = (string)$userid;
-$sessionid = uuid_v4();
+$sessionid = $SESSION->chatbot_sessionid ?? null;
+if (!$sessionid) {
+    $sessionid = uuid_v4();
+    $SESSION->chatbot_sessionid = $sessionid;
+}
 $now = microtime(true);
 $created = gmdate('Y-m-d\TH:i:s.', (int)$now) . sprintf('%06d', ($now - floor($now)) * 1e6);
 
