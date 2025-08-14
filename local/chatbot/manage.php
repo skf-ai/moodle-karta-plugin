@@ -47,17 +47,19 @@ $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pluginname', 'local_chatbot'));
 
-$usersql = "SELECT id, firstname, lastname, email FROM {user} WHERE deleted=0";
+$usersql = "SELECT id, firstname, lastname, email, institution FROM {user} WHERE deleted=0";
 $params = [];
 
 if ($search !== '') {
     $like = '%' . $search . '%';
     $usersql .= " AND (".$DB->sql_like('firstname', ':s1')." OR "
                       .$DB->sql_like('lastname', ':s2')." OR "
-                      .$DB->sql_like('email', ':s3').")";
+                      .$DB->sql_like('email', ':s3')." OR "
+                      .$DB->sql_like('institution', ':s4').")";
     $params['s1'] = $like;
     $params['s2'] = $like;
     $params['s3'] = $like;
+    $params['s4'] = $like;
 }
 
 $users = $DB->get_records_sql($usersql . ' ORDER BY lastname, firstname', $params);
@@ -72,7 +74,7 @@ echo html_writer::end_tag('form');
 
 $table = new html_table();
 $table->id = 'chatbot-user-table';
-$table->head = ['ID', 'Name', 'Email', get_string('credits', 'local_chatbot'), ''];
+$table->head = ['ID', 'Name', get_string('institution'), 'Email', get_string('credits', 'local_chatbot'), ''];
 
 foreach ($users as $user) {
     $record = $DB->get_record('student_chatbots', ['userid' => $user->id]);
@@ -108,7 +110,7 @@ foreach ($users as $user) {
 
     $name = fullname($user);
     $creditsleft = $record ? $record->remainingcredits : 0;
-    $table->data[] = [$user->id, $name, $user->email, $creditsleft, $button];
+    $table->data[] = [$user->id, $name, $user->institution, $user->email, $creditsleft, $button];
 }
 
 echo html_writer::table($table);

@@ -24,7 +24,7 @@ define(['jquery'], function($) {
         var $filterRow = $('<tr class="filter-row"></tr>');
         $thead.find('th').each(function(i) {
             $(this).addClass('sortable');
-            if (i < 3) {
+            if (i < 4) {
                 $filterRow.append($('<th>').append(
                     $('<input>', {type: 'text', 'data-column': i, class: 'filter-input'})));
             } else {
