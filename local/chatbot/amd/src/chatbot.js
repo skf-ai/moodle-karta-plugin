@@ -11,6 +11,7 @@ define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templ
             Templates.runTemplateJS(html);
             $('#chatbot-context').text(username + ' (' + userid + ') - ' + coursename);
             $('#chatbot-credits').text('Credits remaining: ' + credits);
+            addMessage('bot', 'Hi I am SidGuru please let me know if you have any questions relevant to the course');
             setupEvents();
         });
 
@@ -83,7 +84,7 @@ define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templ
         }
 
         function addMessage(sender, text) {
-            var sendername = sender === 'bot' ? 'sid' : username;
+            var sendername = sender === 'bot' ? 'sidGuru' : username;
             if (sender === 'bot') {
                 text = Markdown.convert(text);
             } else {
