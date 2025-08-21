@@ -20,6 +20,11 @@ define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templ
             var $window = $('#chatbot-window');
             $icon.on('click', function() {
                 $window.toggleClass('hidden');
+                if (!$window.hasClass('hidden')) {
+                    $window.addClass('expanded');
+                } else {
+                    $window.removeClass('expanded');
+                }
             });
 
             $('#chatbot-send').on('click', sendMessage);
