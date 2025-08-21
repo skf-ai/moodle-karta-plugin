@@ -93,10 +93,22 @@ define(['jquery'], function($) {
         });
     }
 
+    function setupBulkAddButton() {
+        var $btn = $('#bulk-add-button');
+        if (!$btn.length) {
+            return;
+        }
+        $btn.on('click', function(e) {
+            e.preventDefault();
+            $('#bulk-add-modal').modal('show');
+        });
+    }
+
     return {
         init: function() {
             setupCreditsButtons();
             setupSortingFiltering();
+            setupBulkAddButton();
         }
     };
 });
