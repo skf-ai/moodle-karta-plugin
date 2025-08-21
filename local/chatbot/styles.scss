@@ -33,6 +33,11 @@ $user-color: #dcf8c6;
     &.hidden {
         display: none;
     }
+
+    &.expanded {
+        width: 624px;
+        height: 600px;
+    }
 }
 
 #chatbot-context {
