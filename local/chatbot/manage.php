@@ -9,37 +9,67 @@ $search = optional_param('search', '', PARAM_RAW);
 $action = optional_param('action', '', PARAM_ALPHA);
 $userid = optional_param('userid', 0, PARAM_INT);
 $credits = optional_param('credits', 0, PARAM_INT);
+$bulkusers = optional_param('bulkusers', '', PARAM_RAW);
 
-if ($action && confirm_sesskey() && $userid) {
-    $record = $DB->get_record('student_chatbots', ['userid' => $userid]);
-    if ($action === 'enable') {
-        if ($record) {
-            $record->enabled = 1;
+if ($action && confirm_sesskey()) {
+    if ($action === 'bulkenable' && $bulkusers !== '') {
+        $lines = preg_split("/\r\n|\n|\r/", trim($bulkusers));
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '') {
+                continue;
+            }
+            $user = $DB->get_record('user', ['username' => $line, 'deleted' => 0]);
+            if (!$user) {
+                $user = $DB->get_record('user', ['email' => $line, 'deleted' => 0]);
+            }
+            if ($user) {
+                $record = $DB->get_record('student_chatbots', ['userid' => $user->id]);
+                if ($record) {
+                    $record->enabled = 1;
+                    $record->remainingcredits += $credits;
+                    $DB->update_record('student_chatbots', $record);
+                } else {
+                    $DB->insert_record('student_chatbots', (object)[
+                        'userid' => $user->id,
+                        'enabled' => 1,
+                        'remainingcredits' => $credits
+                    ]);
+                }
+            }
+        }
+        redirect(new moodle_url('/local/chatbot/manage.php', ['search' => $search]));
+    } else if ($userid) {
+        $record = $DB->get_record('student_chatbots', ['userid' => $userid]);
+        if ($action === 'enable') {
+            if ($record) {
+                $record->enabled = 1;
+                $record->remainingcredits += $credits;
+                $DB->update_record('student_chatbots', $record);
+            } else {
+                $DB->insert_record('student_chatbots', (object)[
+                    'userid' => $userid,
+                    'enabled' => 1,
+                    'remainingcredits' => $credits
+                ]);
+            }
+        } else if ($action === 'disable') {
+            if ($record) {
+                $record->enabled = 0;
+                $DB->update_record('student_chatbots', $record);
+            } else {
+                $DB->insert_record('student_chatbots', (object)[
+                    'userid' => $userid,
+                    'enabled' => 0,
+                    'remainingcredits' => 0
+                ]);
+            }
+        } else if ($action === 'addcredits' && $record) {
             $record->remainingcredits += $credits;
             $DB->update_record('student_chatbots', $record);
-        } else {
-            $DB->insert_record('student_chatbots', (object)[
-                'userid' => $userid,
-                'enabled' => 1,
-                'remainingcredits' => $credits
-            ]);
         }
-    } else if ($action === 'disable') {
-        if ($record) {
-            $record->enabled = 0;
-            $DB->update_record('student_chatbots', $record);
-        } else {
-            $DB->insert_record('student_chatbots', (object)[
-                'userid' => $userid,
-                'enabled' => 0,
-                'remainingcredits' => 0
-            ]);
-        }
-    } else if ($action === 'addcredits' && $record) {
-        $record->remainingcredits += $credits;
-        $DB->update_record('student_chatbots', $record);
+        redirect(new moodle_url('/local/chatbot/manage.php', ['search' => $search]));
     }
-    redirect(new moodle_url('/local/chatbot/manage.php', ['search' => $search]));
 }
 
 $url = new moodle_url('/local/chatbot/manage.php', ['search' => $search]);
@@ -71,6 +101,12 @@ echo html_writer::start_tag('form', ['method' => 'get', 'action' => new moodle_u
 echo html_writer::tag('input', '', ['type' => 'text', 'name' => 'search', 'value' => $search, 'placeholder' => get_string('search')]);
 echo html_writer::empty_tag('input', ['type' => 'submit', 'value' => get_string('search')]);
 echo html_writer::end_tag('form');
+
+echo html_writer::tag('button', get_string('bulkaddstudents', 'local_chatbot'), [
+    'type' => 'button',
+    'class' => 'btn btn-secondary mb-3',
+    'id' => 'bulk-add-button'
+]);
 
 $table = new html_table();
 $table->id = 'chatbot-user-table';
@@ -114,5 +150,41 @@ foreach ($users as $user) {
 }
 
 echo html_writer::table($table);
+
+$modal = html_writer::start_div('modal fade', ['id' => 'bulk-add-modal', 'tabindex' => '-1', 'role' => 'dialog', 'aria-hidden' => 'true']);
+$modal .= html_writer::start_div('modal-dialog', ['role' => 'document']);
+$modal .= html_writer::start_div('modal-content');
+$modal .= html_writer::start_tag('form', ['method' => 'post', 'action' => $url]);
+$modal .= html_writer::start_div('modal-header');
+$modal .= html_writer::tag('h5', get_string('bulkaddstudents', 'local_chatbot'), ['class' => 'modal-title']);
+$modal .= html_writer::tag('button', html_writer::tag('span', '&times;', ['aria-hidden' => 'true']), [
+    'type' => 'button',
+    'class' => 'close',
+    'data-dismiss' => 'modal',
+    'aria-label' => get_string('close')
+]);
+$modal .= html_writer::end_div();
+$modal .= html_writer::start_div('modal-body');
+$modal .= html_writer::start_div('form-group');
+$modal .= html_writer::tag('label', get_string('studentlist', 'local_chatbot'), ['for' => 'bulk-users-textarea']);
+$modal .= html_writer::tag('textarea', '', ['class' => 'form-control', 'id' => 'bulk-users-textarea', 'name' => 'bulkusers', 'rows' => 10]);
+$modal .= html_writer::end_div();
+$modal .= html_writer::start_div('form-group');
+$modal .= html_writer::tag('label', get_string('creditsperstudent', 'local_chatbot'), ['for' => 'bulk-credits-input']);
+$modal .= html_writer::empty_tag('input', ['type' => 'number', 'class' => 'form-control', 'id' => 'bulk-credits-input', 'name' => 'credits', 'value' => 300]);
+$modal .= html_writer::end_div();
+$modal .= html_writer::end_div();
+$modal .= html_writer::start_div('modal-footer');
+$modal .= html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'bulkenable']);
+$modal .= html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+$modal .= html_writer::tag('button', get_string('savechanges'), ['type' => 'submit', 'class' => 'btn btn-primary']);
+$modal .= html_writer::tag('button', get_string('cancel'), ['type' => 'button', 'class' => 'btn btn-secondary', 'data-dismiss' => 'modal']);
+$modal .= html_writer::end_div();
+$modal .= html_writer::end_tag('form');
+$modal .= html_writer::end_div();
+$modal .= html_writer::end_div();
+$modal .= html_writer::end_div();
+
+echo $modal;
 
 echo $OUTPUT->footer();
