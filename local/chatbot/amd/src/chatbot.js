@@ -11,7 +11,7 @@ define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templ
             Templates.runTemplateJS(html);
             $('#chatbot-context').text(username + ' (' + userid + ') - ' + coursename);
             $('#chatbot-credits').text('Credits remaining: ' + credits);
-            addMessage('bot', 'Hi I am SidGuru please let me know if you have any questions relevant to the course');
+            addMessage('bot', 'Hello! I\'m SidGuru, your academic companion. I can answer questions, clear doubts, and even summarize course content. How may I assist you today?');
             setupEvents();
         });
 
