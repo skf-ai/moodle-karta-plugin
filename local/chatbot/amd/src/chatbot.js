@@ -11,7 +11,10 @@ define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templ
             Templates.runTemplateJS(html);
             $('#chatbot-context').text(username + ' (' + userid + ') - ' + coursename);
             $('#chatbot-credits').text('Credits remaining: ' + credits);
-            addMessage('bot', 'Hello! I\'m SidGuru, your academic companion. I can answer questions, clear doubts, and even summarize course content. How may I assist you today?');
+            setTimeout(function() {
+                $('#chatbot-window').removeClass('hidden');
+                streamMessage('Hello! I\'m SidGuru, your academic companion. I can answer questions, clear doubts, and even summarize course content. How may I assist you today?');
+            }, 1000);
             setupEvents();
         });
 
@@ -80,6 +83,25 @@ define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templ
                     var msg = xhr.responseText || xhr.statusText || 'Unknown error';
                     callback('Error: ' + msg);
                 }
+            });
+        }
+
+        function streamMessage(text) {
+            var sendername = 'sidGuru';
+            Templates.render('local_chatbot/message', {sender: 'bot', text: '', sendername: sendername}).done(function(html) {
+                $('#chatbot-messages').append(html);
+                Templates.runTemplateJS(html);
+                var $msg = $('#chatbot-messages .msg').last().find('.msg-text');
+                var index = 0;
+                var interval = setInterval(function() {
+                    $msg.html(Markdown.convert(text.substring(0, index)));
+                    index++;
+                    if (index > text.length) {
+                        clearInterval(interval);
+                    }
+                    var container = $('#chatbot-messages')[0];
+                    container.scrollTop = container.scrollHeight;
+                }, 50);
             });
         }
 
