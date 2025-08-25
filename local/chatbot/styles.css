@@ -18,14 +18,16 @@
   position: fixed;
   bottom: 100px;
   left: 20px;
-  width: 416px;
+  width: 540px;
   height: 400px;
   display: flex;
   flex-direction: column;
-  border: 1px solid #ccc;
+  border: 1px solid #888;
   border-radius: 8px;
-  background: #fff;
+  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 1.1em;
 }
 #chatbot-window.hidden {
   display: none;
@@ -58,21 +60,21 @@
   margin: 4px;
   padding: 8px 12px;
   border-radius: 16px;
-  font-size: 0.9em;
+  font-size: 1em;
 }
 .msg.msg-user {
   align-self: flex-end;
-  background: #dcf8c6;
+  background: #C0E8FF;
 }
 .msg.msg-bot {
   align-self: flex-start;
-  background: #F4C430;
+  background: #FFD580;
   color: #000;
 }
 
 .msg .msg-sender {
   font-weight: bold;
-  font-size: 0.75em;
+  font-size: 0.85em;
   text-align: right;
   margin-bottom: 2px;
   color: #333;
