@@ -21,8 +21,12 @@ define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templ
         function setupEvents() {
             var $icon = $('#chatbot-icon');
             var $window = $('#chatbot-window');
+            var $close = $('#chatbot-close');
             $icon.on('click', function() {
                 $window.toggleClass('hidden');
+            });
+            $close.on('click', function() {
+                $window.addClass('hidden');
             });
 
             $('#chatbot-send').on('click', sendMessage);
