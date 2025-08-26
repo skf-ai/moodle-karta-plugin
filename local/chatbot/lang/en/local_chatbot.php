@@ -12,3 +12,4 @@ $string['outofcredits'] = "I'm sorry, you have run out of chat credits, contact 
 $string['bulkaddstudents'] = 'Bulk add students';
 $string['studentlist'] = 'Student usernames or emails (one per line)';
 $string['creditsperstudent'] = 'Credits per student';
+$string['downloadcreditsreport'] = 'Download credits report';

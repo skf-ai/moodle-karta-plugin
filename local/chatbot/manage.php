@@ -39,6 +39,24 @@ if ($action && confirm_sesskey()) {
             }
         }
         redirect(new moodle_url('/local/chatbot/manage.php', ['search' => $search]));
+    } else if ($action === 'downloadcsv') {
+        $records = $DB->get_records_sql("SELECT u.id, u.firstname, u.lastname, u.email, u.institution, sc.remainingcredits
+                                         FROM {user} u
+                                         JOIN {student_chatbots} sc ON sc.userid = u.id
+                                         WHERE u.deleted = 0 AND sc.remainingcredits > 0
+                                         ORDER BY u.lastname, u.firstname");
+
+        $filename = 'chatbot_user_credits_' . date('YmdHis') . '.csv';
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename=' . $filename);
+        $output = fopen('php://output', 'w');
+        fputcsv($output, ['ID', 'Name', get_string('institution'), 'Email', get_string('credits', 'local_chatbot')]);
+        foreach ($records as $record) {
+            $name = fullname($record);
+            fputcsv($output, [$record->id, $name, $record->institution, $record->email, $record->remainingcredits]);
+        }
+        fclose($output);
+        exit;
     } else if ($userid) {
         $record = $DB->get_record('student_chatbots', ['userid' => $userid]);
         if ($action === 'enable') {
@@ -106,6 +124,15 @@ echo html_writer::tag('button', get_string('bulkaddstudents', 'local_chatbot'), 
     'type' => 'button',
     'class' => 'btn btn-secondary mb-3',
     'id' => 'bulk-add-button'
+]);
+
+$downloadurl = new moodle_url('/local/chatbot/manage.php', [
+    'action' => 'downloadcsv',
+    'sesskey' => sesskey()
+]);
+echo html_writer::tag('a', get_string('downloadcreditsreport', 'local_chatbot'), [
+    'href' => $downloadurl,
+    'class' => 'btn btn-secondary mb-3 ml-2'
 ]);
 
 $table = new html_table();
