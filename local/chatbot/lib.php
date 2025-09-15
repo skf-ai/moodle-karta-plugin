@@ -16,6 +16,11 @@ function local_chatbot_before_footer() {
         return;
     }
 
+    // Only display chatbot within actual course pages.
+    if (empty($COURSE) || $COURSE->id == SITEID) {
+        return;
+    }
+
     $coursename = isset($COURSE->fullname) ? $COURSE->fullname : '';
     $username = fullname($USER);
 

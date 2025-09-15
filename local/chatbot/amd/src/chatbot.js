@@ -5,16 +5,19 @@ define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templ
         var coursename = opts.coursename;
         var credits = opts.credits || 0;
         var iconUrl = M.util.image_url('logo', 'local_chatbot');
+        var suppressed = localStorage.getItem('chatbotSuppressed') === '1';
 
         Templates.render('local_chatbot/chatbox', {iconurl: iconUrl}).done(function(html) {
             $('body').append(html);
             Templates.runTemplateJS(html);
             $('#chatbot-context').text(username + ' (' + userid + ') - ' + coursename);
             $('#chatbot-credits').text('Credits remaining: ' + credits);
-            setTimeout(function() {
-                $('#chatbot-window').removeClass('hidden');
-                streamMessage('Hello! I\'m SidGuru, your academic companion. I can answer questions, clear doubts, and even summarize course content. How may I assist you today?');
-            }, 1000);
+            if (!suppressed) {
+                setTimeout(function() {
+                    $('#chatbot-window').removeClass('hidden');
+                    streamMessage('Hello! I\'m SidGuru, your academic companion. I can answer questions, clear doubts, and even summarize course content. How may I assist you today?');
+                }, 1000);
+            }
             setupEvents();
         });
 
@@ -24,9 +27,15 @@ define(['jquery', 'core/templates', 'local_chatbot/markdown'], function($, Templ
             var $close = $('#chatbot-close');
             $icon.on('click', function() {
                 $window.toggleClass('hidden');
+                if ($window.hasClass('hidden')) {
+                    localStorage.setItem('chatbotSuppressed', '1');
+                } else {
+                    localStorage.removeItem('chatbotSuppressed');
+                }
             });
             $close.on('click', function() {
                 $window.addClass('hidden');
+                localStorage.setItem('chatbotSuppressed', '1');
             });
 
             $('#chatbot-send').on('click', sendMessage);
